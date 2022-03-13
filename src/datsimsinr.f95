@@ -62,7 +62,7 @@ contains
     real (C_DOUBLE), intent(in), dimension(n, n) :: d3, cc                       ! network & distance matrices
     real (C_DOUBLE), intent(in), dimension(nsuspar) :: suspar, powersus         ! susceptibility parameters
     real (C_DOUBLE), intent(in), dimension(ntranspar) :: transpar, powertrans   ! transmissibility parameters
-    real (C_DOUBLE), intent(in) :: spark, gamma, tmax                     ! spark& notification effect& max infec. time
+    real (C_DOUBLE), intent(in) :: spark, gamma, tmax                 ! spark& notification effect& max infec. time
     real (C_DOUBLE), intent(in) :: deltain1, deltain2, deltanr1, deltanr2  ! Parameters of the infectious period distribution
     real (C_DOUBLE), intent(in), dimension(2) :: kernelpar               ! parameter of the kernel function
     real (C_DOUBLE), intent(in), dimension(observednum, 6) :: observedepi ! observed epidemic to start
@@ -82,7 +82,6 @@ contains
     call seedin()
 
     SELECT CASE (anum)
-
     CASE (1)
 
 ! case (1): for contact network or distanse based with spark term.  (SINR)
@@ -110,9 +109,9 @@ contains
             if (observedepi1(j, 2) .eq. 0.0_c_double) then
                 epidat(j, 1)  = observedepi1(j, 1)
                 epidat(j, 6)  = observedepi1(j, 6)
-                epidat(j, 5)  = randgamma22(deltain1, 1.0_c_double/deltain2)
+                epidat(j, 5)  = deltain1
                 epidat(j, 4)  = epidat(j, 5) + epidat(j, 6)
-                epidat(j, 3)  = randgamma22(deltanr1, 1.0_c_double/deltanr2)
+                epidat(j, 3)  = deltanr1
                 epidat(j, 2)  = epidat(j, 4) + epidat(j, 3)
             else
                 epidat(j, :)  = observedepi1(j, :)
@@ -120,24 +119,28 @@ contains
         end do
 
 ! the current infection time to start from:
-        t0 = epidat(observednum, 6)
+        t0 = deltain2
+        if ( epidat(observednum, 6) .gt. t0 ) then
+            t0 =  epidat(observednum, 6)
+        end if
+
         xx(int(epidat(1:observednum, 1)), 2) = 1
 
-        mg  = size(pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 4) .lt. epidat(observednum, 6) ))
+        mg  = size(pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 4) .lt. t0 ))
         if (mg .gt. 0) then
             allocate(mmg(mg))
-            mmg = pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 4) .lt. &
-                        & epidat(observednum, 6) )
+            mmg = pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 4) .lt. &
+                        & t0 )
             xx(mmg, 2) = 2
             deallocate(mmg)
         end if
 
-        mg  = size(pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 2) .lt. &
-                & epidat(observednum, 6) ))
+        mg  = size(pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 2) .lt. &
+                & t0 ))
         if (mg .gt. 0) then
             allocate(mmg(mg))
-            mmg = pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 2) .lt. &
-                         & epidat(observednum, 6) )
+            mmg = pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 2) .lt. &
+                         & t0 )
             xx(mmg, 2) = 3
             deallocate(mmg)
         end if
@@ -177,9 +180,9 @@ contains
                 exit
             else
                 epidat(ctr, 6) = ts(1, 2) + t0
-                epidat(ctr, 5) = randgamma22(deltain1, 1.0_c_double/deltain2)
+                epidat(ctr, 5) = deltain1
                 epidat(ctr, 4) = epidat(ctr, 5) + epidat(ctr, 6)
-                epidat(ctr, 3) = randgamma22(deltanr1, 1.0_c_double/deltanr2)
+                epidat(ctr, 3) = deltanr1
                 epidat(ctr, 2) = epidat(ctr, 3) + epidat(ctr, 4)
                 epidat(ctr, 1) = ts(1, 1)
                 t0 = epidat(ctr, 6)
@@ -258,9 +261,9 @@ contains
             if (observedepi1(j, 2) .eq. 0.0_c_double) then
                 epidat(j, 1)  = observedepi1(j, 1)
                 epidat(j, 6)  = observedepi1(j, 6)
-                epidat(j, 5)  = randgamma22(deltain1, 1.0_c_double/deltain2)
+                epidat(j, 5)  = deltain1
                 epidat(j, 4)  = epidat(j, 5) + epidat(j, 6)
-                epidat(j, 3)  = randgamma22(deltanr1, 1.0_c_double/deltanr2)
+                epidat(j, 3)  = deltanr1
                 epidat(j, 2)  = epidat(j, 4) + epidat(j, 3)
             else
                 epidat(j, :)  = observedepi1(j, :)
@@ -268,26 +271,29 @@ contains
         end do
 
 ! the current infection time to start from:
+        t0 = deltain2
+        if ( epidat(observednum, 6) .gt. t0 ) then
+            t0 =  epidat(observednum, 6)
+        end if
 
-        t0 = epidat(observednum, 6)
         xx(int(epidat(1:observednum, 1)), 2) = 1
 
-        mg  = size(pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 4) .lt. &
-                & epidat(observednum, 6) ))
+        mg  = size(pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 4) .lt. &
+                & t0 ))
         if (mg .gt. 0) then
             allocate(mmg(mg))
-            mmg = pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 4) .lt. &
-                & epidat(observednum, 6) )
+            mmg = pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 4) .lt. &
+                & t0 )
             xx(mmg, 2) = 2
             deallocate(mmg)
         end if
 
-        mg  = size(pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 2) .lt. &
-                & epidat(observednum, 6) ))
+        mg  = size(pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 2) .lt. &
+                & t0 ))
         if (mg .gt. 0) then
             allocate(mmg(mg))
-            mmg = pack(int(epidat(1:(observednum-1), 1)), epidat(1:(observednum-1), 2) .lt. &
-                & epidat(observednum, 6) )
+            mmg = pack(int(epidat(1:(observednum), 1)), epidat(1:(observednum), 2) .lt. &
+                & t0 )
             xx(mmg, 2) = 3
             deallocate(mmg)
         end if
@@ -331,9 +337,9 @@ contains
                 exit
             else
                 epidat(ctr, 6) = ts(1, 2) + t0
-                epidat(ctr, 5) = randgamma22(deltain1, 1.0_c_double/deltain2)
+                epidat(ctr, 5) = deltain1
                 epidat(ctr, 4) = epidat(ctr, 5) + epidat(ctr, 6)
-                epidat(ctr, 3) = randgamma22(deltanr1, 1.0_c_double/deltanr2)
+                epidat(ctr, 3) = deltanr1
                 epidat(ctr, 2) = epidat(ctr, 3) + epidat(ctr, 4)
                 epidat(ctr, 1) = ts(1, 1)
                 t0 = epidat(ctr, 6)

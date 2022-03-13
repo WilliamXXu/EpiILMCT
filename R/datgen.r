@@ -1,4 +1,4 @@
-datagen <- function(type, kerneltype, kernelmatrix, distancekernel=NULL, initialepi=NULL, tmax=NULL, suspar=NULL, transpar=NULL, powersus=NULL, powertrans=NULL, kernel.par=NULL, spark=NULL, gamma=NULL, delta, suscov=NULL, transcov=NULL) {
+datagen <- function(type, kerneltype, kernelmatrix, tmin=-10000, distancekernel=NULL, initialepi=NULL, tmax=NULL, suspar=NULL, transpar=NULL, powersus=NULL, powertrans=NULL, kernel.par=NULL, spark=NULL, gamma=NULL, delta, suscov=NULL, transcov=NULL) {
 
     if (type == "SIR") {
 
@@ -133,10 +133,10 @@ datagen <- function(type, kerneltype, kernelmatrix, distancekernel=NULL, initial
                 stop("Error in entering the parameters of the infectious period distribution: delta", call.=FALSE)
             }
             deltain1 <- delta[1,1]
-            deltain2 <- delta[1,2]
+
         } else {
             deltain1 <- delta[1]
-            deltain2 <- delta[2]
+
         }
 
         # checking whether initial infected individuals are specified or not:
@@ -364,7 +364,7 @@ datagen <- function(type, kerneltype, kernelmatrix, distancekernel=NULL, initial
             }
 
             deltain1 <- delta[1,1]
-            deltain2 <- delta[1,2]
+
             deltanr1 <- delta[2,1]
             deltanr2 <- delta[2,2]
 
@@ -464,7 +464,7 @@ datagen <- function(type, kerneltype, kernelmatrix, distancekernel=NULL, initial
         powertrans=as.vector(powertrans,mode="double"),
         kernelpar=as.vector(kernelpar,mode="double"),
         spark=as.double(spark),gamma=as.double(gamma),deltain1=as.double(deltain1),
-        deltain2=as.double(deltain2),deltanr1=as.double(deltanr1),deltanr2=as.double(deltanr2),
+        deltain2=as.double(tmin),deltanr1=as.double(deltanr1),deltanr2=as.double(deltanr2),
         suscov=as.matrix(as.double(suscov),ncol=nsuspar,nrow=n),
         transcov=as.matrix(as.double(transcov),ncol=ntranspar,nrow=n),
         cc=as.matrix(as.double(network),n,n),

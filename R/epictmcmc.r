@@ -1,4 +1,4 @@
-epictmcmc <- function(object, distancekernel = NULL, datatype, blockupdate = NULL, nsim, nchains = NULL, control.sus = NULL, control.trans = NULL, kernel.par = NULL, spark.par = NULL, delta = NULL, gamma.par = NULL, periodproposal = NULL, parallel = FALSE) {
+epictmcmc <- function(object, distancekernel = NULL, datatype, blockupdate = NULL, nsim, nchains = NULL, control.sus = NULL, control.trans = NULL, kernel.par = NULL, spark.par = NULL, delta = NULL, gamma.par = NULL, periodproposal = NULL, parallel = FALSE,real_gamma=c(1,1,1,1,0.1)) {
 
 
     if (!is(object, "datagen")) {
@@ -613,7 +613,7 @@ epictmcmc <- function(object, distancekernel = NULL, datatype, blockupdate = NUL
                 if (!is.list(trans.par)) {
                     stop("The first list of the argument \"control.trans\" (the transmissibility parameters) needs to be entered as a list of two matrices:\n1) a number of initial values equal to \"nchains\" for each parameter \n2) prior distribution, prior parameters, proposal variance for each parameter", call. = FALSE)
                 } else {
-                    if (length(trans.par != 2)) {
+                    if (length(trans.par) != 2) {
                         stop("The first list of the argument \"control.trans\" needs to be entered as a list of two matrices see help(epictmcmc)", call. = FALSE)
                     } else {
                         if (is.matrix(trans.par[[2]])) {
@@ -685,7 +685,7 @@ epictmcmc <- function(object, distancekernel = NULL, datatype, blockupdate = NUL
                     if (!is.list(power.trans)) {
                         stop("The third list of the argument \"control.trans\" (power parameters of transmissibility covariates) needs to be entered as a list of two matrices:\n1) A number of initial values equal to \"nchains\" for each parameter \n2) prior distribution, prior parameters, proposal variance for each parameter", call. = FALSE)
                     } else {
-                        if (length(power.trans != 2)) {
+                        if (length(power.trans) != 2) {
                             stop("The third list of the argument \"control.trans\" needs to be entered as a list of two matrices see help(epictmcmc)", call. = FALSE)
                         } else {
                             if (is.matrix(power.trans[[2]])) {
@@ -776,7 +776,7 @@ epictmcmc <- function(object, distancekernel = NULL, datatype, blockupdate = NUL
 
         } else if (object$type == "SINR") {
 
-            out <- epictmcmcsinr(object, distancekernel, datatype, blockupdate, nsim, nchains, sus, suspower, trans, transpower, kernel, spark, delta, gamma.par, periodproposal, parallel, n, ni, net, dis, num, nsuspar, ntranspar)
+            out <- epictmcmcsinr(object, distancekernel, datatype, blockupdate, nsim, nchains, sus, suspower, trans, transpower, kernel, spark, delta, gamma.par, periodproposal, parallel, n, ni, net, dis, num, nsuspar, ntranspar,real_gamma)
 
         } else {
             stop("Error in specifying the compartmental framework of the model: type", call. = FALSE)

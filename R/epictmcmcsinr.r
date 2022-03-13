@@ -1,4 +1,4 @@
-epictmcmcsinr <- function(object, distancekernel, datatype, blockupdate, nsim, nchains, sus, suspower, trans, transpower, kernel, spark, delta, gamma.par, periodproposal, parallel, n, ni, net, dis, num, nsuspar, ntranspar) {
+epictmcmcsinr <- function(object, distancekernel, datatype, blockupdate, nsim, nchains, sus, suspower, trans, transpower, kernel, spark, delta, gamma.par, periodproposal, parallel, n, ni, net, dis, num, nsuspar, ntranspar,real_gamma) {
 
         initial <- list(NULL)
         infperiodproposalin  <-  vector(mode="double", length = 2)
@@ -168,11 +168,11 @@ epictmcmcsinr <- function(object, distancekernel, datatype, blockupdate, nsim, n
 
         if (is.null(gamma.par)) {
 
-            anum55              <-  2
-            priordistgammapar   <-  1
-            gammaproposalvar    <-  0
-            gammaprior          <-  c(1, 1)
-            initial[[5]]        <-  rep(1,nchains)
+            anum55              <-  1
+            priordistgammapar   <-  real_gamma[1]
+            gammaproposalvar    <-  real_gamma[5]
+            gammaprior          <-  c(real_gamma[3], real_gamma[4])
+            initial[[5]]        <-  rep(real_gamma[2],nchains)
 
         } else {
             if (!is.list(gamma.par)) {
