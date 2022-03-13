@@ -1,4 +1,5 @@
-An improved and adapted version of EpiILMCT:
+An improved and adapted version of EpiILMCT,
+by University of Cambridge part III Systems Biology students
 
 1. fixed the transcov parameter of epictmcmc
 
